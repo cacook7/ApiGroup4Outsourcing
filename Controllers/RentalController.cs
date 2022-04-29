@@ -70,7 +70,7 @@ namespace api.Controllers
 			value.dataHandler.Delete(value);
 		}
 
-		// PUT: api/Rental/5
+		// Post: api/Rental/5
 		[EnableCors("OpenPolicy")]
 		[HttpPost]
 		// [HttpPut("{id}")]

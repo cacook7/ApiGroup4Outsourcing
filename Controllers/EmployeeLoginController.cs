@@ -48,5 +48,14 @@ namespace api.Controllers
 			EmployeeLoginDataHandler updating = new EmployeeLoginDataHandler();
 			updating.UpdateByUsername(value);
 		}
+		
+		// DELETE: api/Employee/5
+		[EnableCors("OpenPolicy")]
+		[HttpDelete("GetEmp/{id}")]
+		public void Delete(int id)
+		{
+			Employee value = new Employee(){EmpID=id};
+			value.dataHandler.Delete(value);
+		}
 	}
 }

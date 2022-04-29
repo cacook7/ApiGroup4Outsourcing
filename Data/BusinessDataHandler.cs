@@ -9,7 +9,11 @@ namespace api.Data
 {
 	public class BusinessDataHandler : IBusinessLoginDataHandler
 	{
-		// private Database db;
+		private Database db;
+		public BusinessDataHandler()
+		{
+			db = new Database();
+		}
 		public List<Business> GetAll()
 		{
 			List<Business> myFirms = new List<Business>();
@@ -54,7 +58,11 @@ namespace api.Data
 		}
 		public void Delete(Business business)
 		{
-			throw new System.NotImplementedException();
+			string sql = "UPDATE firm SET deleted='1' WHERE firmID=@firmID";
+			var values = GetValues(business);
+			db.Open();
+			db.Update(sql, values);
+			db.Close();
 
 		}
 		public void Update(Business business)
@@ -80,6 +88,25 @@ namespace api.Data
 		public List<RentingBusiness> GetCurrentBusinesses()
 		{
 			throw new System.NotImplementedException();
+		}
+		
+		public Dictionary<string, object> GetValues(Business business)
+		{
+			var values = new Dictionary<string, object>()
+			{
+				{"@firmID", business.FirmID},
+				{"@email", business.Email},
+				{"@firmName", business.FirmName},
+				{"@repFN", business.RepFName},
+				{"@repLN", business.RepLName},
+				{"@description", business.FirmDescription},
+				{"@username", business.Username},
+				{"@password", business.Password},
+				{"@deleted", business.Deleted},
+				{"@phoneNum1", business.PhoneNumber1},
+				{"@phoneNum2", business.PhoneNumber2}
+			};
+			return values;
 		}
 	}
 }

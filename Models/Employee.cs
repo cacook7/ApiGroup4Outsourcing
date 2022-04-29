@@ -17,7 +17,6 @@ namespace api.Models
 		public string Username {get; set;}
 		public string Password {get; set;}
 		public int IsAdmin {get; set;}
-		public int ManagedByID {get; set;}
 		public int Deleted {get; set;}
 		
 		public IEmployeeLoginDataHandler dataHandler {get; set;}

@@ -9,7 +9,11 @@ namespace api.Data
 {
 	public class EmployeeDataHandler : IEmployeeLoginDataHandler
 	{
-		// private Database db;
+		private Database db;
+		public EmployeeDataHandler()
+		{
+			db = new Database();
+		}
 		public List<Employee> GetAll()
 		{
 			List<Employee> myEmps = new List<Employee>();
@@ -18,7 +22,7 @@ namespace api.Data
 
 			using var con = new MySqlConnection(cs);
 			con.Open();
-			string stm = "select * from employee";
+			string stm = "select * from employee WHERE deleted='0'";
 			using var cmd = new MySqlCommand(stm, con);
 
 			using MySqlDataReader rdr = cmd.ExecuteReader();
@@ -55,7 +59,11 @@ namespace api.Data
 		
 		public void Delete(Employee employee)
 		{
-			throw new System.NotImplementedException();
+			string sql = "UPDATE employee SET deleted='1' WHERE empID=@empID";
+			var values = GetValues(employee);
+			db.Open();
+			db.Update(sql, values);
+			db.Close();
 		}
 		public void Update(Employee employee)
 		{
@@ -70,6 +78,24 @@ namespace api.Data
 		public void UpdateByUsername(Employee employee)
 		{
 			throw new System.NotImplementedException();
+		}
+		public Dictionary<string, object> GetValues(Employee employee)
+		{
+			var values = new Dictionary<string, object>()
+			{
+				{"@empID", employee.EmpID},
+				{"@empFN", employee.FName},
+				{"@empLN", employee.LName},
+				{"@birthdate", employee.Birthday},
+				{"@admin", employee.IsAdmin},
+				{"@empEmail", employee.Email},
+				{"@username", employee.Username},
+				{"@password", employee.Password},
+				{"@deleted", employee.Deleted},
+				{"@phoneNum1", employee.PhoneNumber1},
+				{"@phoneNum2", employee.PhoneNumber2}
+			};
+			return values;
 		}
 	}
 }

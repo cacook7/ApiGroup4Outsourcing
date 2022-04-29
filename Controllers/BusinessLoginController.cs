@@ -82,5 +82,14 @@ namespace api.Controllers
 			BusinessLoginDataHandler updating = new BusinessLoginDataHandler();
 			updating.UpdateByUsername(value);
 		}
+		
+		// DELETE: api/Business/5
+		[EnableCors("OpenPolicy")]
+		[HttpDelete("GetFirm/{id}")]
+		public void Delete(int id)
+		{
+			Business value = new Business(){FirmID=id};
+			value.dataHandler.Delete(value);
+		}
 	}
 }

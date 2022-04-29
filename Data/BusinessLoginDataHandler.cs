@@ -9,7 +9,11 @@ namespace api.Data
 {
 	public class BusinessLoginDataHandler : IBusinessLoginDataHandler
 	{
-		// private Database db;
+		private Database db;
+		public BusinessLoginDataHandler()
+		{
+			db = new Database();
+		}
 		public List<Business> GetAll()
 		{
 			List<Business> myFirms = new List<Business>();
@@ -79,22 +83,22 @@ namespace api.Data
 			Database myConnection = new Database();
 			string cs = myConnection.ConnString;
 			using var con = new MySqlConnection(cs);
-            con.Open();
+			con.Open();
 			System.Console.WriteLine("made it to before stm");
-            string stm = @$"UPDATE firm SET email = @email, password = @password, repFN = @fName, repLN = @lName, phoneNum1 = @phoneNum1, phoneNum2 = @phoneNum2, firmName = @firmName, description = @description WHERE username = '{business.Username}'";
-            using var cmd = new MySqlCommand(stm, con);
-            cmd.Parameters.AddWithValue("@email", business.Email);
-            cmd.Parameters.AddWithValue("@password", business.Password);
+			string stm = @$"UPDATE firm SET email = @email, password = @password, repFN = @fName, repLN = @lName, phoneNum1 = @phoneNum1, phoneNum2 = @phoneNum2, firmName = @firmName, description = @description WHERE username = '{business.Username}'";
+			using var cmd = new MySqlCommand(stm, con);
+			cmd.Parameters.AddWithValue("@email", business.Email);
+			cmd.Parameters.AddWithValue("@password", business.Password);
 			cmd.Parameters.AddWithValue("@fName", business.RepFName);
 			cmd.Parameters.AddWithValue("@lName", business.RepLName);
 			cmd.Parameters.AddWithValue("@phoneNum1", business.PhoneNumber1);
-            cmd.Parameters.AddWithValue("@phoneNum2", business.PhoneNumber2);
+			cmd.Parameters.AddWithValue("@phoneNum2", business.PhoneNumber2);
 			cmd.Parameters.AddWithValue("@firmName", business.FirmName);
-            cmd.Parameters.AddWithValue("@description", business.FirmDescription);
+			cmd.Parameters.AddWithValue("@description", business.FirmDescription);
 			System.Console.WriteLine("made it to after stm");
-            cmd.Prepare();
+			cmd.Prepare();
 			System.Console.WriteLine("made it to after prepare");
-            cmd.ExecuteNonQuery();
+			cmd.ExecuteNonQuery();
 			System.Console.WriteLine("made it to after execute");
 			con.Close();
 		}
@@ -108,7 +112,7 @@ namespace api.Data
 			using var con = new MySqlConnection(cs);
 			con.Open();
 			string stm = "select distinct f.firmID, email, firmName, repFN, repLN, description, username, password, deleted, phoneNum1, phoneNum2, startDate, endDate";
-			stm += " from firm f join rentaltransaction rt on (f.firmID = rt.firmID) where deleted = '0'";
+			stm += " from firm f join rentaltransaction rt on (f.firmID = rt.firmID) where deleted = '0' group by firmID";
 			using var cmd = new MySqlCommand(stm, con);
 
 			using MySqlDataReader rdr = cmd.ExecuteReader();
@@ -124,8 +128,11 @@ namespace api.Data
 
 		public void Delete(Business business)
 		{
-			throw new System.NotImplementedException();
-			
+			string sql = "UPDATE firm SET deleted='1' WHERE firmID=@firmID";
+			var values = GetValues(business);
+			db.Open();
+			db.Update(sql, values);
+			db.Close();
 		}
 		public void Update(Business business)
 		{
@@ -137,23 +144,41 @@ namespace api.Data
 			Database myConnection = new Database();
 			string cs = myConnection.ConnString;
 			using var con = new MySqlConnection(cs);
-            con.Open();
+			con.Open();
 			System.Console.WriteLine("made it to before stm");
-            string stm = @"INSERT INTO firm(email, firmName, repFN, repLN, username, password, deleted) VALUES(@email, @firmName, @repFN, @repLN, @username, @password, @deleted)";
-            using var cmd = new MySqlCommand(stm, con);
-            cmd.Parameters.AddWithValue("@email", business.Email);
-            cmd.Parameters.AddWithValue("@firmName", business.FirmName);
+			string stm = @"INSERT INTO firm(email, firmName, repFN, repLN, username, password, deleted) VALUES(@email, @firmName, @repFN, @repLN, @username, @password, @deleted)";
+			using var cmd = new MySqlCommand(stm, con);
+			cmd.Parameters.AddWithValue("@email", business.Email);
+			cmd.Parameters.AddWithValue("@firmName", business.FirmName);
 			cmd.Parameters.AddWithValue("@repFN", business.RepFName);
 			cmd.Parameters.AddWithValue("@repLN", business.RepLName);
 			cmd.Parameters.AddWithValue("@username", business.Username);
 			cmd.Parameters.AddWithValue("@password", business.Password);
-            cmd.Parameters.AddWithValue("@deleted", 0);
+			cmd.Parameters.AddWithValue("@deleted", 0);
 			System.Console.WriteLine("made it to after stm");
-            cmd.Prepare();
+			cmd.Prepare();
 			System.Console.WriteLine("made it to after prepare");
-            cmd.ExecuteNonQuery();
+			cmd.ExecuteNonQuery();
 			System.Console.WriteLine("made it to after execute");
 			con.Close();
+		}
+		public Dictionary<string, object> GetValues(Business business)
+		{
+			var values = new Dictionary<string, object>()
+			{
+				{"@firmID", business.FirmID},
+				{"@email", business.Email},
+				{"@firmName", business.FirmName},
+				{"@repFN", business.RepFName},
+				{"@repLN", business.RepLName},
+				{"@description", business.FirmDescription},
+				{"@username", business.Username},
+				{"@password", business.Password},
+				{"@deleted", business.Deleted},
+				{"@phoneNum1", business.PhoneNumber1},
+				{"@phoneNum2", business.PhoneNumber2}
+			};
+			return values;
 		}
 	}
 }
