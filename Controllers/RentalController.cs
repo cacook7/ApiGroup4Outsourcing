@@ -42,30 +42,23 @@ namespace api.Controllers
 			return myRental;
 		}
 
-        [EnableCors("OpenPolicy")]
-        [HttpGet("GetTransactions")]
-        public List<RentalTransaction> Get()
-        {
-            RentalDataHandler getting = new RentalDataHandler();
-            List<RentalTransaction> temp = getting.GetAllTransactions();
-            return temp;
-        }
-
-        // GET: api/RentalApplication/5
-        [EnableCors("OpenPolicy")]
-        [HttpGet("GetTransactionsByFirm/{id}")]
-        public List<RentalTransaction> GetByFirm(int id)
-        {
-            RentalDataHandler getting = new RentalDataHandler();
-            List<RentalTransaction> temp = getting.GetTransactionByFirm(id);
-            return temp;
-        }
-
-		// PUT: api/Rental/5
 		[EnableCors("OpenPolicy")]
-		[HttpPut("{id}")]
-		public void Put(int id, [FromBody] string value)
+		[HttpGet("GetTransactions")]
+		public List<RentalTransaction> Get()
 		{
+			RentalDataHandler getting = new RentalDataHandler();
+			List<RentalTransaction> temp = getting.GetAllTransactions();
+			return temp;
+		}
+
+		// GET: api/RentalApplication/5
+		[EnableCors("OpenPolicy")]
+		[HttpGet("GetTransactionsByFirm/{id}")]
+		public List<RentalTransaction> GetByFirm(int id)
+		{
+			RentalDataHandler getting = new RentalDataHandler();
+			List<RentalTransaction> temp = getting.GetTransactionByFirm(id);
+			return temp;
 		}
 
 		// DELETE: api/Rental/5
@@ -77,13 +70,14 @@ namespace api.Controllers
 			value.dataHandler.Delete(value);
 		}
 
-        // PUT: api/Rental/5
+		// PUT: api/Rental/5
 		[EnableCors("OpenPolicy")]
 		[HttpPost]
+		// [HttpPut("{id}")]
 		public void Post([FromBody] Rental value)
 		{
-            RentalDataHandler dataHandler = new RentalDataHandler();
-            dataHandler.Insert(value);
+			RentalDataHandler dataHandler = new RentalDataHandler();
+			dataHandler.Insert(value);
 		}
 	}
 }
